@@ -1,0 +1,11 @@
+Metadata-Version: 2.1
+Briefcase-Version: 0.3.12
+Name: pricechecker
+Formal-Name: Price Checker
+App-ID: com.example.pricechecker
+Version: 0.0.1
+Home-page: https://example.com/pricechecker
+Download-URL: https://example.com/pricechecker
+Author: Steven Canton
+Author-email: cantonsteven6@gmail.com
+Summary: An application that searches for the best deals from Ebay.
