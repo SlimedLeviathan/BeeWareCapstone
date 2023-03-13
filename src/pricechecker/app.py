@@ -4,7 +4,8 @@ An application that searches for the best deals from Ebay.
 import toga
 from toga.style import Pack
 from toga.style.pack import COLUMN, ROW
-
+from .serpApiTest import search
+import webbrowser
 
 class PriceChecker(toga.App):
 
@@ -42,19 +43,39 @@ class PriceChecker(toga.App):
         button_box.add(self.search_button)
         button_box.add(self.search_under_button)
 
+        self.resultBox = toga.Box(style = Pack(direction = COLUMN))
+
         main_box.add(search_box)
         main_box.add(price_box)
         main_box.add(button_box)
+        main_box.add(self.resultBox)
 
         self.main_window = toga.MainWindow(title=self.formal_name)
         self.main_window.content = main_box
         self.main_window.show()
+        
 
-    def search():
-        pass
+    def search(self, *args):
+        
+        self.resultsList = search(self.search_input.value)
 
-    def search_under():
-        pass
+        self.resultButtonList = []
+
+        for result in self.resultsList:
+            self.resultButtonList.append(toga.Button(result['message'], on_press = self.link, style = Pack()))
+
+            self.resultBox.add(self.resultButtonList[-1])
+
+    def search_under(self, *args):
+
+        self.resultsList = search(self.search_input.value)
+
+
+    def link(self, button):
+        
+        for num in range(len(self.resultButtonList)):
+            if self.resultButtonList[num] == button:
+                webbrowser.open_new(self.resultsList[num]['link'])
 
 def main():
     return PriceChecker()
