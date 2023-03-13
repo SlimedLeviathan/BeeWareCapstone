@@ -68,7 +68,7 @@ class PriceChecker(toga.App):
 
     def search_under(self, *args):
 
-        self.resultsList = search(self.search_input.value)
+        self.resultsList = search(self.search_input.value, float(self.price_input.value))
 
 
     def link(self, button):
