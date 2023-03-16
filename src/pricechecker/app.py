@@ -5,7 +5,9 @@ import toga
 from toga.style import Pack
 from toga.style.pack import COLUMN, ROW
 from .serpApiTest import search
+from toga.constants import RED, GREEN, YELLOW
 import webbrowser
+
 
 class PriceChecker(toga.App):
 
@@ -37,6 +39,8 @@ class PriceChecker(toga.App):
 
         button_box = toga.Box(style = Pack(direction = ROW, padding = 5))
 
+        self.resultButtonList = []
+
         self.search_button = toga.Button('Search on Ebay', on_press = self.search, style = Pack(padding = 5))
         self.search_under_button = toga.Button('Search Below Price Input', on_press = self.search_under, style = Pack(padding = 5))
 
@@ -44,6 +48,7 @@ class PriceChecker(toga.App):
         button_box.add(self.search_under_button)
 
         self.resultBox = toga.Box(style = Pack(direction = COLUMN))
+        self.resultScroll = toga.ScrollContainer(style = Pack(direction = COLUMN), horizontal = False, content = self.resultBox)
 
         main_box.add(search_box)
         main_box.add(price_box)
@@ -53,23 +58,51 @@ class PriceChecker(toga.App):
         self.main_window = toga.MainWindow(title=self.formal_name)
         self.main_window.content = main_box
         self.main_window.show()
-        
 
     def search(self, *args):
         
+        for result in self.resultButtonList:
+            self.resultBox.remove(result)
+        
         self.resultsList = search(self.search_input.value)
 
-        self.resultButtonList = []
-
-        for result in self.resultsList:
-            self.resultButtonList.append(toga.Button(result['message'], on_press = self.link, style = Pack()))
-
-            self.resultBox.add(self.resultButtonList[-1])
+        self.get_results()
 
     def search_under(self, *args):
 
+        for _ in range(len(self.resultButtonList)):
+            self.resultBox.remove(self.resultButtonList[-1])
+            self.resultButtonList.pop()
+
         self.resultsList = search(self.search_input.value, float(self.price_input.value))
 
+        self.get_results()
+
+    def get_results(self, *args):
+
+        leeway = 50
+
+        self.resultButtonList = []
+
+        if self.price_input.value != "":
+            for result in self.resultsList:
+                if int(self.price_input.value) - leeway < result['price']:
+                    self.resultButtonList.append(toga.Button(result['message'], on_press = self.link, style = Pack(background_color = RED)))
+
+                elif int(self.price_input.value) + leeway > result['price']:
+                    self.resultButtonList.append(toga.Button(result['message'], on_press = self.link, style = Pack(background_color = GREEN)))
+                
+                else:
+                    self.resultButtonList.append(toga.Button(result['message'], on_press = self.link, style = Pack(background_color = YELLOW)))
+
+                self.resultBox.add(self.resultButtonList[-1])
+
+        else:
+            for result in self.resultsList:
+
+                self.resultButtonList.append(toga.Button(result['message'], on_press = self.link, style = Pack()))
+
+                self.resultBox.add(self.resultButtonList[-1])
 
     def link(self, button):
         
