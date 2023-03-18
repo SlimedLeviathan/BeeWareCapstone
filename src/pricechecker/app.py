@@ -96,17 +96,27 @@ class PriceChecker(toga.App):
         for result in self.resultButtonList:
             self.resultBox.remove(result)
         
-        self.resultsList = search(self.APIDrop.value, self.search_input.value)
+        try:
+            self.resultsList = search(self.APIDrop.value, self.search_input.value)
 
-        if len(self.resultsList) == 0:
+        except ConnectionError:
+
             self.Error = True
 
-            self.ErrorLabel = toga.Label('No Items Found', style = Pack(padding = (6,0)))
+            self.ErrorLabel = toga.Label('Network Error, Try Connecting to the Internet', style = Pack(padding = (6,0)))
 
             self.button_box.add(self.ErrorLabel)
 
         else:
-            self.get_results()
+            if len(self.resultsList) == 0:
+                self.Error = True
+    
+                self.ErrorLabel = toga.Label('No Items Found', style = Pack(padding = (6,0)))
+    
+                self.button_box.add(self.ErrorLabel)
+    
+            else:
+                self.get_results()
 
     def search_under(self, *args):
 
@@ -118,17 +128,27 @@ class PriceChecker(toga.App):
         for result in self.resultButtonList:
             self.resultBox.remove(result)
 
-        self.resultsList = search(self.APIDrop.value, self.search_input.value, float(self.price_input.value))
+        try:
+            self.resultsList = search(self.APIDrop.value, self.search_input.value, float(self.price_input.value))
 
-        if len(self.resultsList) == 0:
+        except ConnectionError:
+
             self.Error = True
 
-            self.ErrorLabel = toga.Label('No Items Found', style = Pack(padding = (6,0)))
+            self.ErrorLabel = toga.Label('Network Error, Try Connecting to the Internet', style = Pack(padding = (6,0)))
 
             self.button_box.add(self.ErrorLabel)
 
         else:
-            self.get_results()
+            if len(self.resultsList) == 0:
+                self.Error = True
+
+                self.ErrorLabel = toga.Label('No Items Found', style = Pack(padding = (6,0)))
+
+                self.button_box.add(self.ErrorLabel)
+
+            else:
+                self.get_results()
 
     def sortByPrice(self, *args):
 

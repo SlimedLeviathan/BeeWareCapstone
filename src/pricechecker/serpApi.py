@@ -2,7 +2,11 @@ from serpapi import GoogleSearch
 
 def search(API, item, price = None):
 
-    return searchDict[API](item, price)
+    try:
+        return searchDict[API](item, price)
+    
+    except:
+        raise ConnectionError()
 
 # Done
 def ebaySearch(item, price = None):
@@ -14,9 +18,13 @@ def ebaySearch(item, price = None):
     }
 
     search = GoogleSearch(params)
-    results = search.get_dict()
 
+    try:
+        results = search.get_dict()
 
+    except:
+        raise ConnectionError()
+    
     resultsList = []
     # message += results['search_metadata']['ebay_url']
 
@@ -53,16 +61,23 @@ def HDSearch(item, price = None):
     }
 
     search = GoogleSearch(params)
-    results = search.get_dict()
 
+    try:
+        results = search.get_dict()
 
+    except:
+        raise ConnectionError()
+    
     resultsList = []
     # message += results['search_metadata']['ebay_url']
 
     for result in results['products']:
+        
+        if price == None:
+            makeMessage(result['title'], result['price'], result['link'], resultsList)
 
-
-        makeMessage(result['title'], result['price'], result['link'], resultsList)
+        elif result['price'] < price:
+            makeMessage(result['title'], result['price'], result['link'], resultsList)
 
     return resultsList
 
@@ -75,9 +90,13 @@ def GSSearch(item, price = None):
     }
 
     search = GoogleSearch(params)
-    results = search.get_dict()
 
+    try:
+        results = search.get_dict()
 
+    except:
+        raise ConnectionError()
+    
     resultsList = []
     # message += results['search_metadata']['ebay_url']
 
@@ -88,7 +107,11 @@ def GSSearch(item, price = None):
         if itemPrice == 0:
             itemPrice = 'Price Not Listed'
 
-        makeMessage(result['title'], itemPrice, result['link'], resultsList)
+        if price == None:
+            makeMessage(result['title'], itemPrice, result['link'], resultsList)
+
+        elif result['price'] < price and not itemPrice == 'Price Not Listed':
+            makeMessage(result['title'], itemPrice, result['link'], resultsList)
 
     return resultsList
 
@@ -101,15 +124,23 @@ def walmartSearch(item, price = None):
     }
 
     search = GoogleSearch(params)
-    results = search.get_dict()
 
+    try:
+        results = search.get_dict()
+
+    except:
+        raise ConnectionError()
 
     resultsList = []
     # message += results['search_metadata']['ebay_url']
 
     for result in results['organic_results']:
 
-        makeMessage(result['title'], result['primary_offer']['offer_price'], result['product_page_url'], resultsList)
+        if price == None:
+            makeMessage(result['title'], result['primary_offer']['offer_price'], result['product_page_url'], resultsList)
+
+        elif int(result['price']) < price:
+            makeMessage(result['title'], result['primary_offer']['offer_price'], result['link'], resultsList)
 
     return resultsList
 
@@ -130,7 +161,11 @@ def makeMessage(title, price, link, resultsList):
 def accountSearch():
     import requests
 
-    results = requests.get(url = 'https://serpapi.com/account?api_key=7882222ae7ae04d88939b426f6170b90a4c6f8fde079a51b27b715f84aef8800').json()
+    try:
+        results = requests.get(url = 'https://serpapi.com/account?api_key=7882222ae7ae04d88939b426f6170b90a4c6f8fde079a51b27b715f84aef8800').json()
+
+    except:
+        raise ConnectionError()
 
     return results['total_searches_left']
 
