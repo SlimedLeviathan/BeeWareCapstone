@@ -60,7 +60,7 @@ class PriceChecker(toga.App):
 
         self.button_box = toga.Box(style = Pack(direction = ROW, padding = 2))
 
-        self.resultButtonList = []
+        self.resultBoxList = []
 
         self.search_button = toga.Button('Search', on_press = self.search, style = Pack(padding = 2))
         self.search_under_button = toga.Button('Search Below Price', on_press = self.search_under, style = Pack(padding = 2))
@@ -88,87 +88,57 @@ class PriceChecker(toga.App):
 
     def search(self, *args):
 
-        if self.Error == True:
-            self.button_box.remove(self.ErrorLabel)
-
-            self.Error = False
+        self.deleteError()
         
-        for result in self.resultButtonList:
+        for result in self.resultBoxList:
             self.resultBox.remove(result)
         
         try:
             self.resultsList = search(self.APIDrop.value, self.search_input.value)
 
         except ConnectionError:
-
-            self.Error = True
-
-            self.ErrorLabel = toga.Label('Network Error, Try Connecting to the Internet', style = Pack(padding = (6,0)))
-
-            self.button_box.add(self.ErrorLabel)
+            self.showError('Network Error, Try Checking Your Internet Connection')
 
         else:
             if len(self.resultsList) == 0:
-                self.Error = True
-    
-                self.ErrorLabel = toga.Label('No Items Found', style = Pack(padding = (6,0)))
-    
-                self.button_box.add(self.ErrorLabel)
+                self.showError('No Items Found')
     
             else:
                 self.get_results()
 
     def search_under(self, *args):
 
-        if self.Error == True:
-            self.button_box.remove(self.ErrorLabel)
+        self.deleteError()
 
-            self.Error = False
-
-        for result in self.resultButtonList:
+        for result in self.resultBoxList:
             self.resultBox.remove(result)
 
         try:
             self.resultsList = search(self.APIDrop.value, self.search_input.value, float(self.price_input.value))
 
         except ConnectionError:
-
-            self.Error = True
-
-            self.ErrorLabel = toga.Label('Network Error, Try Connecting to the Internet', style = Pack(padding = (6,0)))
-
-            self.button_box.add(self.ErrorLabel)
+            self.showError('Network Error, Try Checking Your Internet Connection')
 
         else:
             if len(self.resultsList) == 0:
-                self.Error = True
-
-                self.ErrorLabel = toga.Label('No Items Found', style = Pack(padding = (6,0)))
-
-                self.button_box.add(self.ErrorLabel)
+                self.showError('No Items Found')
 
             else:
                 self.get_results()
 
     def sortByPrice(self, *args):
 
-        if self.Error == True:
-            self.button_box.remove(self.ErrorLabel)
+        self.deleteError()
 
-            self.Error = False
-
-        for result in self.resultButtonList:
+        for result in self.resultBoxList:
             self.resultBox.remove(result)
 
         def sortPrice(value):
             return value['price']
 
         try:
-            if len(self.resultsList) == 0 or len(self.resultButtonList) == 0:
-                self.Error = True
-                self.ErrorLabel = toga.Label("No Items to Sort", style = Pack(padding = (5,0)))
-
-                self.button_box.add(self.ErrorLabel)
+            if len(self.resultsList) == 0 or len(self.resultBoxList) == 0:
+                self.showError('No Items to Sort')
 
             else:
                 self.resultsList.sort(key = sortPrice)
@@ -176,19 +146,26 @@ class PriceChecker(toga.App):
                 self.get_results()
         
         except:
-            self.Error = True
-            self.ErrorLabel = toga.Label("Error Sorting Items", style = Pack(padding = (5,0)))
-
-            self.button_box.add(self.ErrorLabel)
+            self.showError('Error Sorting Items')
 
     def uses_left(self, *args):
 
-        self.Error = True
+        self.showError(f"{accountSearch()} Searches Left")
+    
+    # Background Functions
 
-        self.ErrorLabel = toga.Label(f"{accountSearch()} Searches Left", style = Pack(padding = (5,0)))
+    def showError(self, text):
+        self.Error = True
+        self.ErrorLabel = toga.Label(text, style = Pack(padding = (5,0)))
 
         self.button_box.add(self.ErrorLabel)
 
+    def deleteError(self):
+        if self.Error == True:
+            self.button_box.remove(self.ErrorLabel)
+
+            self.Error = False
+            
     def get_results(self, *args):
 
         leeway = 0
@@ -202,37 +179,43 @@ class PriceChecker(toga.App):
         else:
             price = self.price_input.value
 
-        self.resultButtonList = []
+        self.resultBoxList = []
 
         if self.price_input.value != "":
             for result in self.resultsList:
 
+                self.resultBoxList.append(toga.Box(style = Pack(direction = ROW)))
+
                 # If the price is not specified, keep the color white
                 if type(result['price']) == str:
-                    self.resultButtonList.append(toga.Button(result['message'], on_press = self.link, style = Pack()))
+                    self.resultBoxList[-1].add(toga.ImageView(image = result['image'], style = Pack(width = 40, height = 40)))
+                    self.resultBoxList[-1].add(toga.Button(result['message'], on_press = self.link, style = Pack(direction = ROW)))
 
                 elif price + leeway < result['price']:
-                    self.resultButtonList.append(toga.Button(result['message'], on_press = self.link, style = Pack(background_color = LIGHTCORAL)))
+                    self.resultBoxList[-1].add(toga.ImageView(image = result['image'], style = Pack(width = 40, height = 40)))
+                    self.resultBoxList[-1].add(toga.Button(result['message'], on_press = self.link, style = Pack(background_color = LIGHTCORAL, direction = ROW)))
 
                 elif price - leeway > result['price']:
-                    self.resultButtonList.append(toga.Button(result['message'], on_press = self.link, style = Pack(background_color = LIGHTGREEN)))
+                    self.resultBoxList[-1].add(toga.ImageView(image = result['image'], style = Pack(width = 40, height = 40)))
+                    self.resultBoxList[-1].add(toga.Button(result['message'], on_press = self.link, style = Pack(background_color = LIGHTGREEN, direction = ROW)))
                 
                 else:
-                    self.resultButtonList.append(toga.Button(result['message'], on_press = self.link, style = Pack(background_color = YELLOW)))
+                    self.resultBoxList[-1].add(toga.ImageView(image = result['image'], style = Pack(width = 40, height = 40)))
+                    self.resultBoxList[-1].add(toga.Button(result['message'], on_press = self.link, style = Pack(background_color = YELLOW, direction = ROW)))
 
-                self.resultBox.add(self.resultButtonList[-1])
+                self.resultBox.add(self.resultBoxList[-1])
 
         else:
             for result in self.resultsList:
 
-                self.resultButtonList.append(toga.Button(result['message'], on_press = self.link, style = Pack()))
+                self.resultBoxList.append(toga.Button(result['message'], on_press = self.link, style = Pack()))
 
-                self.resultBox.add(self.resultButtonList[-1])
+                self.resultBox.add(self.resultBoxList[-1])
 
     def link(self, button):
         
-        for num in range(len(self.resultButtonList)):
-            if self.resultButtonList[num] == button:
+        for num in range(len(self.resultBoxList)):
+            if self.resultBoxList[num] == button:
                 webbrowser.open_new(self.resultsList[num]['link'])
 
 def main():

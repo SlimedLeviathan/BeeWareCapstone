@@ -33,10 +33,10 @@ def ebaySearch(item, price = None):
         itemPrice = ebayPrices(result)
 
         if price == None or itemPrice == 'Price Not Found':
-            makeMessage(result['title'], itemPrice, result['link'], resultsList)
+            makeMessage(result['title'], itemPrice, result['link'], result['thumbnail'], resultsList)
 
         elif itemPrice < price:
-            makeMessage(result['title'], itemPrice, result['link'], resultsList)
+            makeMessage(result['title'], itemPrice, result['link'], result['thumbnail'], resultsList)
 
     return resultsList
 
@@ -74,10 +74,10 @@ def HDSearch(item, price = None):
     for result in results['products']:
         
         if price == None:
-            makeMessage(result['title'], result['price'], result['link'], resultsList)
+            makeMessage(result['title'], result['price'], result['link'], result['thumbnails'][0], resultsList)
 
         elif result['price'] < price:
-            makeMessage(result['title'], result['price'], result['link'], resultsList)
+            makeMessage(result['title'], result['price'], result['link'], result['thumbnails'][0], resultsList)
 
     return resultsList
 
@@ -108,10 +108,10 @@ def GSSearch(item, price = None):
             itemPrice = 'Price Not Listed'
 
         if price == None:
-            makeMessage(result['title'], itemPrice, result['link'], resultsList)
+            makeMessage(result['title'], itemPrice, result['link'], result['thumbnail'], resultsList)
 
         elif result['price'] < price and not itemPrice == 'Price Not Listed':
-            makeMessage(result['title'], itemPrice, result['link'], resultsList)
+            makeMessage(result['title'], itemPrice, result['link'], result['thumbnail'], resultsList)
 
     return resultsList
 
@@ -137,14 +137,14 @@ def walmartSearch(item, price = None):
     for result in results['organic_results']:
 
         if price == None:
-            makeMessage(result['title'], result['primary_offer']['offer_price'], result['product_page_url'], resultsList)
+            makeMessage(result['title'], result['primary_offer']['offer_price'], result['product_page_url'], result['thumbnail'], resultsList)
 
         elif int(result['price']) < price:
-            makeMessage(result['title'], result['primary_offer']['offer_price'], result['link'], resultsList)
+            makeMessage(result['title'], result['primary_offer']['offer_price'], result['link'], result['thumbnail'], resultsList)
 
     return resultsList
 
-def makeMessage(title, price, link, resultsList):
+def makeMessage(title, price, link, image, resultsList):
     
     message = ''
 
@@ -156,7 +156,7 @@ def makeMessage(title, price, link, resultsList):
     else:
         message += f' {price}'
 
-    resultsList.append({'message' : message, 'link' : link, 'price' : price})
+    resultsList.append({'message' : message, 'link' : link, 'price' : price, 'image' : image})
 
 def accountSearch():
     import requests
