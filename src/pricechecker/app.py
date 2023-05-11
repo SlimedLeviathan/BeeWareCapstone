@@ -149,7 +149,8 @@ class PriceChecker(toga.App):
             self.showError('Error Sorting Items')
 
     def uses_left(self, *args):
-
+        
+        self.deleteError()
         self.showError(f"{accountSearch()} Searches Left")
     
     # Background Functions
@@ -215,7 +216,7 @@ class PriceChecker(toga.App):
     def link(self, button):
         
         for num in range(len(self.resultBoxList)):
-            if self.resultBoxList[num] == button:
+            if self.resultBoxList[num].children[1] == button:
                 webbrowser.open_new(self.resultsList[num]['link'])
 
 def main():
