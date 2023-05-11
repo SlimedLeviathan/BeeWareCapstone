@@ -186,22 +186,31 @@ class PriceChecker(toga.App):
             for result in self.resultsList:
 
                 self.resultBoxList.append(toga.Box(style = Pack(direction = ROW)))
+                
+                if type(result['image']) == list:
+                    image = result['image'][0]
+
+                else:
+                    image = result['image']
+
+                if image[-4:] != '.jpg':
+                    image = image + '.png'
 
                 # If the price is not specified, keep the color white
-                if type(result['price']) == str:
-                    self.resultBoxList[-1].add(toga.ImageView(image = result['image'], style = Pack(width = 40, height = 40)))
+                if type(result['price']) == str or price == 0:
+                    self.resultBoxList[-1].add(toga.ImageView(image = image, style = Pack(width = 40, height = 40)))
                     self.resultBoxList[-1].add(toga.Button(result['message'], on_press = self.link, style = Pack(direction = ROW)))
 
                 elif price + leeway < result['price']:
-                    self.resultBoxList[-1].add(toga.ImageView(image = result['image'], style = Pack(width = 40, height = 40)))
+                    self.resultBoxList[-1].add(toga.ImageView(image = image, style = Pack(width = 40, height = 40)))
                     self.resultBoxList[-1].add(toga.Button(result['message'], on_press = self.link, style = Pack(background_color = LIGHTCORAL, direction = ROW)))
 
                 elif price - leeway > result['price']:
-                    self.resultBoxList[-1].add(toga.ImageView(image = result['image'], style = Pack(width = 40, height = 40)))
+                    self.resultBoxList[-1].add(toga.ImageView(image = image, style = Pack(width = 40, height = 40)))
                     self.resultBoxList[-1].add(toga.Button(result['message'], on_press = self.link, style = Pack(background_color = LIGHTGREEN, direction = ROW)))
                 
                 else:
-                    self.resultBoxList[-1].add(toga.ImageView(image = result['image'], style = Pack(width = 40, height = 40)))
+                    self.resultBoxList[-1].add(toga.ImageView(image = image, style = Pack(width = 40, height = 40)))
                     self.resultBoxList[-1].add(toga.Button(result['message'], on_press = self.link, style = Pack(background_color = YELLOW, direction = ROW)))
 
                 self.resultBox.add(self.resultBoxList[-1])
