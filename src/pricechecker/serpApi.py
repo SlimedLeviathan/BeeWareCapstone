@@ -100,7 +100,7 @@ def GSSearch(item, price = None):
     resultsList = []
     # message += results['search_metadata']['ebay_url']
 
-    for result in results['inline_shopping_results']:
+    for result in results['shopping_results']:
 
         itemPrice = result['extracted_price']
         

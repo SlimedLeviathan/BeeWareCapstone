@@ -114,7 +114,11 @@ class PriceChecker(toga.App):
             self.resultBox.remove(result)
 
         try:
-            self.resultsList = search(self.APIDrop.value, self.search_input.value, float(self.price_input.value))
+
+            self.resultsList = []
+
+            if self.price_input.value != None:
+                self.resultsList = search(self.APIDrop.value, self.search_input.value, float(self.price_input.value))
 
         except ConnectionError:
             self.showError('Network Error, Try Checking Your Internet Connection')
@@ -194,23 +198,27 @@ class PriceChecker(toga.App):
                     image = result['image']
 
                 if image[-4:] != '.jpg':
-                    image = image + '.png'
+                    image = None
 
-                # If the price is not specified, keep the color white
+                # If the price is not specified or our price is 0, keep the color white
                 if type(result['price']) == str or price == 0:
-                    self.resultBoxList[-1].add(toga.ImageView(image = image, style = Pack(width = 40, height = 40)))
+                    if image != None:
+                        self.resultBoxList[-1].add(toga.ImageView(image = image, style = Pack(width = 40, height = 40)))
                     self.resultBoxList[-1].add(toga.Button(result['message'], on_press = self.link, style = Pack(direction = ROW)))
 
                 elif price + leeway < result['price']:
-                    self.resultBoxList[-1].add(toga.ImageView(image = image, style = Pack(width = 40, height = 40)))
+                    if image != None:
+                        self.resultBoxList[-1].add(toga.ImageView(image = image, style = Pack(width = 40, height = 40)))
                     self.resultBoxList[-1].add(toga.Button(result['message'], on_press = self.link, style = Pack(background_color = LIGHTCORAL, direction = ROW)))
 
                 elif price - leeway > result['price']:
-                    self.resultBoxList[-1].add(toga.ImageView(image = image, style = Pack(width = 40, height = 40)))
+                    if image != None:
+                        self.resultBoxList[-1].add(toga.ImageView(image = image, style = Pack(width = 40, height = 40)))
                     self.resultBoxList[-1].add(toga.Button(result['message'], on_press = self.link, style = Pack(background_color = LIGHTGREEN, direction = ROW)))
                 
                 else:
-                    self.resultBoxList[-1].add(toga.ImageView(image = image, style = Pack(width = 40, height = 40)))
+                    if image != None:
+                        self.resultBoxList[-1].add(toga.ImageView(image = image, style = Pack(width = 40, height = 40)))
                     self.resultBoxList[-1].add(toga.Button(result['message'], on_press = self.link, style = Pack(background_color = YELLOW, direction = ROW)))
 
                 self.resultBox.add(self.resultBoxList[-1])
