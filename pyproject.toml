@@ -20,7 +20,10 @@ test_sources = [
 ]
 
 requires = [
+    "google-search-results",
+    "toga",
 ]
+
 test_requires = [
     "pytest",
 ]
@@ -28,7 +31,7 @@ test_requires = [
 [tool.briefcase.app.pricechecker.macOS]
 requires = [
     "toga-cocoa~=0.3.0",
-    "std-nslog~=1.0.0"
+    "std-nslog~=1.0.0",
 ]
 
 [tool.briefcase.app.pricechecker.linux]
@@ -64,12 +67,12 @@ requires = [
 [tool.briefcase.app.pricechecker.iOS]
 requires = [
     "toga-iOS~=0.3.0",
-    "std-nslog~=1.0.0"
+    "std-nslog~=1.0.0",
 ]
 
 [tool.briefcase.app.pricechecker.android]
 requires = [
-    "toga-android~=0.3.0"
+    "toga-android~=0.3.0",
 ]
 
 # Web deployments
